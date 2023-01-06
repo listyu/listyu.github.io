@@ -1,0 +1,558 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>nedb 使用说明 | ListYu</title>
+<link rel="shortcut icon" href="https://listyu.github.io/favicon.ico?v=1673000314475">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://listyu.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="nedb 使用说明 | ListYu - Atom Feed" href="https://listyu.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="nedb是一个用javascript编写的轻量级嵌入式数据库。
+安装
+npm install nedb
+创建与挂载数据库
+您可以将NeDB用作仅内存中的数据存储或持久数据存储。一个数据存储相当于MongoDB集合。构造函数的使用方式如下：n..." />
+    <meta name="keywords" content="javascript,nedb" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://listyu.github.io">
+  <img class="avatar" src="https://listyu.github.io/images/avatar.png?v=1673000314475" alt="">
+  </a>
+  <h1 class="site-title">
+    ListYu
+  </h1>
+  <p class="site-description">
+    Hi.I'm HengJie.
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              nedb 使用说明
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-01-04
+              </span>
+              <span>
+                16 min read
+              </span>
+              
+                <a href="https://listyu.github.io/tag/IXHs-qaZI/" class="post-tag">
+                  # javascript
+                </a>
+              
+                <a href="https://listyu.github.io/tag/It88VWy5a2/" class="post-tag">
+                  # nedb
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>nedb是一个用javascript编写的轻量级嵌入式数据库。</p>
+<h2 id="安装">安装</h2>
+<p><code>npm install nedb</code></p>
+<h2 id="创建与挂载数据库">创建与挂载数据库</h2>
+<p>您可以将NeDB用作仅内存中的数据存储或持久数据存储。一个数据存储相当于MongoDB集合。构造函数的使用方式如下：<code>new Datastore(options)</code>，其中 <code>options</code> 是具有以下字段的对象：</p>
+<ul>
+<li><code>filename</code>（可选）：保存数据的文件的路径。如果保留为空，则数据存储将自动仅在内存中考虑。</li>
+<li><code>inMemoryOnly</code> （可选，默认为false）：顾名思义。</li>
+<li><code>autoload</code>  （可选，默认为false）：如果使用，数据库将在创建时自动从数据文件加载（不需要调用 <code>loadDatabase</code> ）。在加载完成之前发出的任何命令都将被缓冲，并将在加载完成时执行。</li>
+<li><code>nodeWebkitAppName</code> （可选）：如果您在Node Webkit应用程序中使用NeDB，请在此字段中指定其名称（与 <code>package.json</code> 中使用的名称相同），文件名将与Node Webkit用于存储应用程序其余数据（本地存储等）的目录相对应。它适用于Linux、OS X和Windows</li>
+</ul>
+<p>如果使用不带自动加载选项的持久数据存储，则需要手动调用 <code>loadDatabase</code> 。此函数从数据文件中获取数据并准备数据库。别忘了！如果使用持久数据存储，则在调用 <code>loadDatabase</code> 之前不会执行任何命令（<code>insert</code>、<code>find</code>、<code>update</code>、<code>remove</code>），因此请确保自己调用它或使用 <code>autoload</code> 选项。</p>
+<pre><code class="language-javascript">// Type 1: In-memory only datastore (no need to load the database)
+var Datastore = require('nedb')
+  , db = new Datastore();
+
+
+// Type 2: Persistent datastore with manual loading
+var Datastore = require('nedb')
+  , db = new Datastore({ filename: 'path/to/datafile' });
+db.loadDatabase(function (err) {    // Callback is optional
+  // Now commands will be executed
+});
+
+
+// Type 3: Persistent datastore with automatic loading
+var Datastore = require('nedb')
+  , db = new Datastore({ filename: 'path/to/datafile', autoload: true });
+// You can issue commands right away
+
+
+// Type 4: Persistent datastore for a Node Webkit app called 'nwtest'
+// For example on Linux, the datafile will be ~/.config/nwtest/nedb-data/something.db
+var Datastore = require('nedb')
+  , db = new Datastore({ filename: 'something.db', nodeWebkitAppName: 'nwtest' });
+
+
+// Of course you can create multiple datastores if you need several
+// collections. In this case it's usually a good idea to use autoload for all collections.
+db = {};
+db.users = new Datastore('path/to/users.db');
+db.robots = new Datastore('path/to/robots.db');
+
+// You need to load each database (here we do it asynchronously)
+db.users.loadDatabase();
+db.robots.loadDatabase();
+</code></pre>
+<h3 id="插入数据">插入数据</h3>
+<p>本机类型为 <code>String</code>、<code>Number</code>、<code>Boolean</code>、<code>Date</code> 和 <code>null</code>。也可以使用数组和子文档（对象）。如果字段未定义，它将不会被保存（这与MongoDB不同，MongoDB在null中转换undefined，我发现这是不直观的）。<br>
+NeDB将自动生成_id字段。这是一个16个字符的字母数字字符串，一旦生成就不能修改。与MongoDB不同，您不能指定它（无论如何这应该不是问题）。</p>
+<p>字段名不能以 <code>'$'</code> 开头或包含 <code>'.'</code>。</p>
+<pre><code class="language-javascript">var document = { hello: 'world'
+               , n: 5
+               , today: new Date()
+               , nedbIsAwesome: true
+               , notthere: null
+               , notToBeSaved: undefined  // Will not be saved
+               , fruits: [ 'apple', 'orange', 'pear' ]
+               , infos: { name: 'nedb' }
+               };
+
+db.insert(document, function (err, newDoc) {   // Callback is optional
+  // newDoc is the newly inserted document, including its _id
+  // newDoc has no key called notToBeSaved since its value was undefined
+});
+</code></pre>
+<h3 id="更新数据">更新数据</h3>
+<p><code>db.update(query, update, options, callback)</code></p>
+<ul>
+<li><code>query</code> 与 <code>find</code> 和 <code>findOne</code> 使用的查找查询类型相同</li>
+<li><code>update</code> 指定应如何修改文档。它要么是一个新文档，要么是一组修饰符（不能同时使用，这没有意义！）
+<ul>
+<li>新文档将替换匹配的文档</li>
+<li>如果字段不存在，修改器将创建需要修改的字段，您可以将它们应用于子域。可用的字段修饰符是 <code>$set</code> 用于更改字段值，<code>$inc</code> 用于增加字段值。要处理数组，需要 <code>$push</code> 、<code>$pop</code>、 <code>$addToSet</code> 和特殊的 <code>$each</code> 。有关语法，请参见下面的示例。</li>
+</ul>
+</li>
+<li><code>options</code> 是具有两个可能参数的对象
+<ul>
+<li><code>multi</code> （默认为 <code>false</code>），如果设置为 <code>true</code>，则允许修改多个文档</li>
+<li><code>upsert</code> （默认为 <code>false</code>）如果您的查询与任何内容都不匹配，则要插入与更新规则相对应的新文档</li>
+</ul>
+</li>
+<li><code>callback</code> （可选）参数：err，numReplaced，upstart</li>
+<li><code>numReplaced</code> 被替换的文档数</li>
+<li><code>upstart</code> 如果选择了追加启动模式并插入了文档，则设置为 <code>true</code></li>
+</ul>
+<p>示例</p>
+<pre><code class="language-javascript">// Let's use the same example collection as in the &quot;finding document&quot; part
+// { _id: 'id1', planet: 'Mars', system: 'solar', inhabited: false }
+// { _id: 'id2', planet: 'Earth', system: 'solar', inhabited: true }
+// { _id: 'id3', planet: 'Jupiter', system: 'solar', inhabited: false }
+// { _id: 'id4', planet: 'Omicron Persia 8', system: 'futurama', inhabited: true }
+
+// Replace a document by another
+db.update({ planet: 'Jupiter' }, { planet: 'Pluton'}, {}, function (err, numReplaced) {
+  // numReplaced = 1
+  // The doc #3 has been replaced by { _id: 'id3', planet: 'Pluton' }
+  // Note that the _id is kept unchanged, and the document has been replaced
+  // (the 'system' and inhabited fields are not here anymore)
+});
+
+// Set an existing field's value
+db.update({ system: 'solar' }, { $set: { system: 'solar system' } }, { multi: true }, function (err, numReplaced) {
+  // numReplaced = 3
+  // Field 'system' on Mars, Earth, Jupiter now has value 'solar system'
+});
+
+// Setting the value of a non-existing field in a subdocument by using the dot-notation
+db.update({ planet: 'Mars' }, { $set: { &quot;data.satellites&quot;: 2, &quot;data.red&quot;: true } }, {}, function () {
+  // Mars document now is { _id: 'id1', system: 'solar', inhabited: false
+  //                      , data: { satellites: 2, red: true }
+  //                      }
+  // Not that to set fields in subdocuments, you HAVE to use dot-notation
+  // Using object-notation will just replace the top-level field
+  db.update({ planet: 'Mars' }, { $set: { data: { satellites: 3 } } }, {}, function () {
+    // Mars document now is { _id: 'id1', system: 'solar', inhabited: false
+    //                      , data: { satellites: 3 }
+    //                      }
+    // You lost the &quot;data.red&quot; field which is probably not the intended behavior
+  });
+});
+
+// Deleting a field
+db.update({ planet: 'Mars' }, { $unset: { planet: true } }, {}, function () {
+  // Now the document for Mars doesn't contain the planet field
+  // You can unset nested fields with the dot notation of course
+});
+
+// Upserting a document
+db.update({ planet: 'Pluton' }, { planet: 'Pluton', inhabited: false }, { upsert: true }, function (err, numReplaced, upsert) {
+  // numReplaced = 1, upsert = true
+  // A new document { _id: 'id5', planet: 'Pluton', inhabited: false } has been added to the collection
+});
+
+// If you upsert with a modifier, the upserted doc is the query modified by the modifier
+// This is simpler than it sounds :)
+db.update({ planet: 'Pluton' }, { $inc: { distance: 38 } }, { upsert: true }, function () {
+  // A new document { _id: 'id5', planet: 'Pluton', distance: 38 } has been added to the collection  
+});
+
+// If we insert a new document { _id: 'id6', fruits: ['apple', 'orange', 'pear'] } in the collection,
+// let's see how we can modify the array field atomically
+
+// $push inserts new elements at the end of the array
+db.update({ _id: 'id6' }, { $push: { fruits: 'banana' } }, {}, function () {
+  // Now the fruits array is ['apple', 'orange', 'pear', 'banana']
+});
+
+// $pop removes an element from the end (if used with 1) or the front (if used with -1) of the array
+db.update({ _id: 'id6' }, { $pop: { fruits: 1 } }, {}, function () {
+  // Now the fruits array is ['apple', 'orange']
+  // With { $pop: { fruits: -1 } }, it would have been ['orange', 'pear']
+});
+
+// $addToSet adds an element to an array only if it isn't already in it
+// Equality is deep-checked (i.e. $addToSet will not insert an object in an array already containing the same object)
+// Note that it doesn't check whether the array contained duplicates before or not
+db.update({ _id: 'id6' }, { $addToSet: { fruits: 'apple' } }, {}, function () {
+  // The fruits array didn't change
+  // If we had used a fruit not in the array, e.g. 'banana', it would have been added to the array
+});
+
+// $each can be used to $push or $addToSet multiple values at once
+// This example works the same way with $addToSet
+db.update({ _id: 'id6' }, { $push: { fruits: ['banana', 'orange'] } }, {}, function () {
+  // Now the fruits array is ['apple', 'orange', 'pear', 'banana', 'orange']
+});
+</code></pre>
+<h3 id="删除数据">删除数据</h3>
+<p><code>db.remove(query, options, callback)</code>  将根据选项删除所有匹配查询的文档</p>
+<ul>
+<li><code>query</code> 与用于查找和更新的相同</li>
+<li><code>options</code> 目前只有一个选项：<code>multi</code>，如果设置为 <code>true</code> ，则允许删除多个文档。默认值为 <code>false</code></li>
+<li><code>callback</code> 是可选的，参数：<code>err</code>，<code>numRemoved</code></li>
+</ul>
+<pre><code class="language-javascript">// Let's use the same example collection as in the &quot;finding document&quot; part
+// { _id: 'id1', planet: 'Mars', system: 'solar', inhabited: false }
+// { _id: 'id2', planet: 'Earth', system: 'solar', inhabited: true }
+// { _id: 'id3', planet: 'Jupiter', system: 'solar', inhabited: false }
+// { _id: 'id4', planet: 'Omicron Persia 8', system: 'futurama', inhabited: true }
+
+// Remove one document from the collection
+// options set to {} since the default for multi is false
+db.remove({ _id: 'id2' }, {}, function (err, numRemoved) {
+  // numRemoved = 1
+});
+
+// Remove multiple documents
+db.remove({ system: 'solar' }, { multi: true }, function (err, numRemoved) {
+  // numRemoved = 3
+  // All planets from the solar system were removed
+});
+</code></pre>
+<h3 id="查找文档">查找文档</h3>
+<p>使用 <code>find</code> 查找与查询匹配的多个文档，或使用 <code>findOne</code> 查找一个特定文档。您可以基于字段相等性选择文档或使用比较运算符（<code>$lt</code>、<code>$lte</code>、<code>$gt</code>、<code>$gte</code>、<code>$in</code>、<code>$nin</code>、<code>$ne</code>）。您还可以使用逻辑运算符<code>$or</code>、<code>$and</code>和<code>$not</code>。语法见下文。<br>
+可以通过两种方式使用正则表达式：在基本查询中代替字符串，或使用<code>$regex</code>运算符。<br>
+您可以使用游标API对结果进行排序和分页（见下文）。</p>
+<h4 id="基本查询">基本查询</h4>
+<p>基本查询方法是查找字段与指定字段匹配的文档。可以使用正则表达式来匹配字符串。您可以使用点符号在嵌套文档、数组和子文档数组中导航，并匹配数组中的特定元素。</p>
+<pre><code class="language-javascript">// Let's say our datastore contains the following collection
+// { _id: 'id1', planet: 'Mars', system: 'solar', inhabited: false, satellites: ['Phobos', 'Deimos'] }
+// { _id: 'id2', planet: 'Earth', system: 'solar', inhabited: true, humans: { genders: 2, eyes: true } }
+// { _id: 'id3', planet: 'Jupiter', system: 'solar', inhabited: false }
+// { _id: 'id4', planet: 'Omicron Persei 8', system: 'futurama', inhabited: true, humans: { genders: 7 } }
+// { _id: 'id5', completeData: { planets: [ { name: 'Earth', number: 3 }, { name: 'Mars', number: 2 }, { name: 'Pluton', number: 9 } ] } }
+
+// Finding all planets in the solar system
+db.find({ system: 'solar' }, function (err, docs) {
+  // docs is an array containing documents Mars, Earth, Jupiter
+  // If no document is found, docs is equal to []
+});
+
+// Finding all planets whose name contain the substring 'ar' using a regular expression
+db.find({ planet: /ar/ }, function (err, docs) {
+  // docs contains Mars and Earth
+});
+
+// Finding all inhabited planets in the solar system
+db.find({ system: 'solar', inhabited: true }, function (err, docs) {
+  // docs is an array containing document Earth only
+});
+
+// Use the dot-notation to match fields in subdocuments
+db.find({ &quot;humans.genders&quot;: 2 }, function (err, docs) {
+  // docs contains Earth
+});
+
+// Use the dot-notation to navigate arrays of subdocuments
+db.find({ &quot;completeData.planets.name&quot;: &quot;Mars&quot; }, function (err, docs) {
+  // docs contains document 5
+});
+
+db.find({ &quot;completeData.planets.name&quot;: &quot;Jupiter&quot; }, function (err, docs) {
+  // docs is empty
+});
+
+db.find({ &quot;completeData.planets.0.name&quot;: &quot;Earth&quot; }, function (err, docs) {
+  // docs contains document 5
+  // If we had tested against &quot;Mars&quot; docs would be empty because we are matching against a specific array element
+});
+
+
+// You can also deep-compare objects. Don't confuse this with dot-notation!
+db.find({ humans: { genders: 2 } }, function (err, docs) {
+  // docs is empty, because { genders: 2 } is not equal to { genders: 2, eyes: true }
+});
+
+// Find all documents in the collection
+db.find({}, function (err, docs) {
+});
+
+// The same rules apply when you want to only find one document
+db.findOne({ _id: 'id1' }, function (err, doc) {
+  // doc is the document Mars
+  // If no document is found, doc is null
+});
+</code></pre>
+<h4 id="运算符lt-lte-gt-gte-in-nin-ne-exists-regex">运算符（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>t</mi><mi mathvariant="normal">、</mi></mrow><annotation encoding="application/x-tex">lt、</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span><span class="mord cjk_fallback">、</span></span></span></span>lte、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mi>t</mi><mi mathvariant="normal">、</mi></mrow><annotation encoding="application/x-tex">gt、</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">t</span><span class="mord cjk_fallback">、</span></span></span></span>gte、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi><mi>n</mi><mi mathvariant="normal">、</mi></mrow><annotation encoding="application/x-tex">in、</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord cjk_fallback">、</span></span></span></span>nin、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mi>e</mi><mi mathvariant="normal">、</mi></mrow><annotation encoding="application/x-tex">ne、</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault">e</span><span class="mord cjk_fallback">、</span></span></span></span>exists、$regex）</h4>
+<p>语法为 <code>{field: {$op:value}}</code>，其中<code>$op</code>是任何比较运算符：</p>
+<ul>
+<li><code>$lt</code> , <code>$lte</code> : 小于、小于或等于</li>
+<li><code>$gt</code>, <code>$gte</code> ：大于、大于或等于</li>
+<li><code>$in</code> : 的成员。值必须是值的数组</li>
+<li><code>$ne</code>, <code>$nin</code>：不相等，不是的成员</li>
+<li><code>$exists</code>：检查文档是否具有属性字段。值应为 <code>true</code> 或 <code>false</code></li>
+<li><code>$regex</code>：检查字符串是否与正则表达式匹配。与MongoDB相反，不支持将 <code>$options</code> 与 <code>$regex</code> 一起使用，因为它不会比regex标志更强大。基本查询更可读，因此只有在需要使用另一个运算符时才使用<code>$regex</code>运算符（请参见下面的示例）</li>
+</ul>
+<pre><code class="language-javascript">// $lt, $lte, $gt and $gte work on numbers and strings
+db.find({ &quot;humans.genders&quot;: { $gt: 5 } }, function (err, docs) {
+  // docs contains Omicron Persei 8, whose humans have more than 5 genders (7).
+});
+
+// When used with strings, lexicographical order is used
+db.find({ planet: { $gt: 'Mercury' }}, function (err, docs) {
+  // docs contains Omicron Persei 8
+})
+
+// Using $in. $nin is used in the same way
+db.find({ planet: { $in: ['Earth', 'Jupiter'] }}, function (err, docs) {
+  // docs contains Earth and Jupiter
+});
+
+// Using $exists
+db.find({ satellites: { $exists: true } }, function (err, docs) {
+  // docs contains only Mars
+});
+
+// Using $regex with another operator
+db.find({ planet: { $regex: /ar/, $nin: ['Jupiter', 'Earth'] } }, function (err, docs) {
+  // docs only contains Mars because Earth was excluded from the match by $nin
+});
+</code></pre>
+<h4 id="数组字段">数组字段</h4>
+<p>当文档中的字段是数组时，NeDB首先尝试查看是否使用了特定于数组的比较函数（目前只有 <code>$size</code> ），然后首先尝试。如果没有，则将查询视为对每个元素的查询，如果至少有一个元素匹配，则存在匹配。</p>
+<pre><code class="language-javascript">// Using an array-specific comparison function
+// Note: you can't use nested comparison functions, e.g. { $size: { $lt: 5 } } will throw an error
+db.find({ satellites: { $size: 2 } }, function (err, docs) {
+  // docs contains Mars
+});
+
+db.find({ satellites: { $size: 1 } }, function (err, docs) {
+  // docs is empty
+});
+
+// If a document's field is an array, matching it means matching any element of the array
+db.find({ satellites: 'Phobos' }, function (err, docs) {
+  // docs contains Mars. Result would have been the same if query had been { satellites: 'Deimos' }
+});
+
+// This also works for queries that use comparison operators
+db.find({ satellites: { $lt: 'Amos' } }, function (err, docs) {
+  // docs is empty since Phobos and Deimos are after Amos in lexicographical order
+});
+
+// This also works with the $in and $nin operator
+db.find({ satellites: { $in: ['Moon', 'Deimos'] } }, function (err, docs) {
+  // docs contains Mars (the Earth document is not complete!)
+});
+</code></pre>
+<h4 id="逻辑运算符orandnot">逻辑运算符<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>o</mi><mi>r</mi><mi mathvariant="normal">，</mi></mrow><annotation encoding="application/x-tex">or，</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">，</span></span></span></span>and，$not</h4>
+<p>可以使用逻辑运算符组合查询：</p>
+<ul>
+<li>对于<code>$or</code>和<code>$and</code>，语法为<code>{$op:[query1，query2，…]}</code>。</li>
+<li>对于<code>$not</code>，语法为<code>{$not:query}</code></li>
+</ul>
+<pre><code class="language-javascript">db.find({ $or: [{ planet: 'Earth' }, { planet: 'Mars' }] }, function (err, docs) {
+  // docs contains Earth and Mars
+});
+
+db.find({ $not: { planet: 'Earth' } }, function (err, docs) {
+  // docs contains Mars, Jupiter, Omicron Persei 8
+});
+
+// You can mix normal queries, comparison queries and logical operators
+db.find({ $or: [{ planet: 'Earth' }, { planet: 'Mars' }], inhabited: true }, function (err, docs) {
+  // docs contains Earth
+});
+</code></pre>
+<h4 id="排序和分页">排序和分页</h4>
+<p>如果不指定要查找、查找一个或计数的回调，则返回游标对象。您可以使用<code>sort</code>、<code>skip</code>和<code>limit</code>修改光标，然后使用<code>exec</code>（回调）执行它。</p>
+<pre><code class="language-javascript">// Let's say the database contains these 4 documents
+// doc1 = { _id: 'id1', planet: 'Mars', system: 'solar', inhabited: false, satellites: ['Phobos', 'Deimos'] }
+// doc2 = { _id: 'id2', planet: 'Earth', system: 'solar', inhabited: true, humans: { genders: 2, eyes: true } }
+// doc3 = { _id: 'id3', planet: 'Jupiter', system: 'solar', inhabited: false }
+// doc4 = { _id: 'id4', planet: 'Omicron Persei 8', system: 'futurama', inhabited: true, humans: { genders: 7 } }
+
+// No query used means all results are returned (before the Cursor modifiers)
+db.find({}).sort({ planet: 1 }).skip(1).limit(2).exec(function (err, docs) {
+  // docs is [doc3, doc1]
+});
+
+// You can sort in reverse order like this
+db.find({ system: 'solar' }).sort({ planet: -1 }).exec(function (err, docs) {
+  // docs is [doc1, doc3, doc2]
+});
+
+// You can sort on one field, then another, and so on like this:
+db.find({}).sort({ firstField: 1, secondField: -1 }) ...   // You understand how this works!
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%AE%89%E8%A3%85">安装</a></li>
+<li><a href="#%E5%88%9B%E5%BB%BA%E4%B8%8E%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E5%BA%93">创建与挂载数据库</a>
+<ul>
+<li><a href="#%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE">插入数据</a></li>
+<li><a href="#%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE">更新数据</a></li>
+<li><a href="#%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE">删除数据</a></li>
+<li><a href="#%E6%9F%A5%E6%89%BE%E6%96%87%E6%A1%A3">查找文档</a>
+<ul>
+<li><a href="#%E5%9F%BA%E6%9C%AC%E6%9F%A5%E8%AF%A2">基本查询</a></li>
+<li><a href="#%E8%BF%90%E7%AE%97%E7%AC%A6lt-lte-gt-gte-in-nin-ne-exists-regex">运算符（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>t</mi><mi mathvariant="normal">、</mi></mrow><annotation encoding="application/x-tex">lt、</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span><span class="mord cjk_fallback">、</span></span></span></span>lte、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mi>t</mi><mi mathvariant="normal">、</mi></mrow><annotation encoding="application/x-tex">gt、</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">t</span><span class="mord cjk_fallback">、</span></span></span></span>gte、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi><mi>n</mi><mi mathvariant="normal">、</mi></mrow><annotation encoding="application/x-tex">in、</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord cjk_fallback">、</span></span></span></span>nin、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mi>e</mi><mi mathvariant="normal">、</mi></mrow><annotation encoding="application/x-tex">ne、</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault">e</span><span class="mord cjk_fallback">、</span></span></span></span>exists、$regex）</a></li>
+<li><a href="#%E6%95%B0%E7%BB%84%E5%AD%97%E6%AE%B5">数组字段</a></li>
+<li><a href="#%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6orandnot">逻辑运算符<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>o</mi><mi>r</mi><mi mathvariant="normal">，</mi></mrow><annotation encoding="application/x-tex">or，</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">，</span></span></span></span>and，$not</a></li>
+<li><a href="#%E6%8E%92%E5%BA%8F%E5%92%8C%E5%88%86%E9%A1%B5">排序和分页</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://listyu.github.io/post/dnftianyu/">
+              <h3 class="post-title">
+                DNF 大天御巴卡妮搭配
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://listyu.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
